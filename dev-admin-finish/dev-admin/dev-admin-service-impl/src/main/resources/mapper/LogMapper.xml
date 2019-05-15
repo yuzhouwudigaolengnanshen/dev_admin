@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.dev.admin.mapper.LogMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into log (menu_id,menu_name,request_path,user_id,user_name,cost,create_datetime,is_error,error,ip_address)
+          values
+       (#{menuId},#{menuName},#{requestPath},#{userId},#{userName},#{cost},#{createDatetime},#{isError},#{error},#{ipAddress})
+    </insert>
+
+    <delete id="deleteBatch">
+        delete from log where id in
+        <foreach collection="ids" item="idValue" index="no" open="(" separator="," close=")">
+            #{idValue}
+        </foreach>
+    </delete>
+
+    <select id="getLogList" resultType="com.dev.admin.entity.Log">
+        select * from log where 1=1
+        <if test="startCreateDatetime !=null">
+            and create_datetime &gt;= #{startCreateDatetime}
+        </if>
+        <if test="endCreateDatetime !=null">
+            and create_datetime &lt;= #{endCreateDatetime}
+        </if>
+        order by create_datetime desc
+    </select>
+
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.dev.admin.mapper.OrganizationMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into organization (`name`,code,parent_id,sequence,create_date)
+          values
+       (#{name},#{code},#{parentId},#{sequence},#{createDate})
+    </insert>
+
+    <update id="update" useGeneratedKeys="true" keyProperty="id">
+        update organization
+          set name = #{name},
+              code = #{code},
+              sequence = #{sequence}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from organization where id = #{id}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from organization where id in
+        <foreach collection="ids" item="idValue" index="no" open="(" separator="," close=")">
+            #{idValue}
+        </foreach>
+
+    </delete>
+
+    <select id="getOrgList" resultType="com.dev.admin.entity.Organization">
+        select * from organization where 1=1
+        <if test="name !=null and name != ''">
+            and name like #{name}
+        </if>
+        <if test="code !=null and code != ''">
+            and code like #{code}
+        </if>
+
+        <if test="parentId !=null">
+            and parent_id = #{parentId}
+        </if>
+
+        order by sequence
+    </select>
+
+    <select id="getOrgListAll" resultType="com.dev.admin.entity.Organization">
+        select * from organization order by sequence
+    </select>
+
+</mapper>

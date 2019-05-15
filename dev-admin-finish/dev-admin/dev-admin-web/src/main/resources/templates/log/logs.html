@@ -1,0 +1,143 @@
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="form-box">
+                    <div class="layui-form layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-form-mid">开始时间:</div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" class="layui-input" id="startCreateDatetime" placeholder="yyyy-MM-dd HH:mm:ss">
+                            </div>
+                            <div class="layui-form-mid">结束时间:</div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" class="layui-input" id="endCreateDatetime" placeholder="yyyy-MM-dd HH:mm:ss">
+                            </div>
+                            <button id="logSearch" class="layui-btn layui-btn-blue">查询</button>
+                        </div>
+                    </div>
+                    <button id="logDelete" class="layui-btn layui-btn-danger"><i class="layui-icon">&#xe640;</i>批量删除</button>
+                    <table id="logTable" lay-filter="logTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/html" id="errorTemplate">
+    {{#  if(d.isError == 1){ }}
+    <a style="color:blue;" href="javascript:;" lay-event="logError">详情</a>
+    {{#  } }}
+</script>
+
+<script>
+
+    $(function(){
+        var element = layui.element;
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+
+        $("#logDelete").click(function () {
+            var checkStatus = table.checkStatus('logTable'); //idTest 即为基础参数 id 对应的值
+            var data = checkStatus.data;
+            var len = data.length;
+            if(len == 0){
+                return;
+            }
+
+            layer.confirm('确认删除选择数据吗?',{ icon: 0}, function(index) {
+                var idArray = new Array();
+                for (var i = 0; i < data.length; i++) {
+                    idArray.push(data[i].id);
+                }
+
+                $.post('log/removeLogs', {ids: idArray}, function (data) {
+                    layer.msg('删除成功');
+                    table.reload('logTable', {
+                        page: 1
+                    });
+                })
+            });
+        });
+
+
+
+        //常规用法
+        laydate.render({
+            elem: '#startCreateDatetime'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endCreateDatetime'
+            ,type: 'datetime'
+        });
+        $("#logSearch").click(function () {
+            var startCreateDatetime = $("#startCreateDatetime").val();
+            var endCreateDatetime = $("#endCreateDatetime").val();
+            table.reload('logTable',{
+                where:{
+                    startCreateDatetime:startCreateDatetime,
+                    endCreateDatetime:endCreateDatetime
+                },
+                page:1
+            }); //表格重载
+        });
+
+        //展示已知数据
+        table.render({
+            elem: '#logTable'
+            ,url: 'log/getLogList' //数据接口
+            ,cols: [[ //标题栏
+                {type:'checkbox'}
+                ,{field: 'id', title: 'id', sort: true}
+                ,{field: 'menuName', title: '菜单名称'}
+                ,{field: 'requestPath', title: '请求路径'}
+                ,{field: 'userName', title: '操作人'}
+                ,{field: 'cost', title: '耗时（ms）'}
+                ,{field: 'createDatetime', title: '创建时间',width:200}
+                ,{field: 'error', title: '错误信息',align:'center',templet: '#errorTemplate'}
+
+            ]]
+            ,response: {
+                //statusName: 'status' //规定数据状态的字段名称，默认：code
+                //,statusCode: 200 //规定成功的状态码，默认：0
+                countName: 'total' //规定数据总数的字段名称，默认：count
+                ,dataName: 'list' //规定数据列表的字段名称，默认：data
+            }
+            ,skin: 'line' //表格风格
+            ,page: true //是否显示分页
+            ,limits: [10, 20, 50]
+            ,limit: 10 //每页默认显示的数量
+        });
+
+
+        //监听行工具事件
+        table.on('tool(logTable)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'logError'){
+                var tree;
+                var index = layer.open({
+                    type: 1
+                    ,title: '错误信息'
+                    ,area: ['800px', '500px']
+                    ,shade: 0
+                    ,maxmin: true
+                    ,content: '<div id="logError" style="padding:10px;"></div>'
+                    ,btn: ['确定']
+                    ,yes: function(){
+                        layer.close(index);
+                    }
+                    ,btn2: function(){
+                        layer.close(index);
+                    }
+                });
+                $("#logError").html(data.error);
+            }
+
+        });
+
+    });
+</script>

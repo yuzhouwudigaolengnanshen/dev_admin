@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.dev.admin.mapper.MenuMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into menu (`name`,code,parent_id,url,sequence,create_date)
+          values
+       (#{name},#{code},#{parentId},#{url},#{sequence},#{createDate})
+    </insert>
+
+    <update id="update" useGeneratedKeys="true" keyProperty="id">
+        update menu
+          set name = #{name},
+              code = #{code},
+              url = #{url},
+              sequence = #{sequence}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from menu where id = #{id}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from menu where id in
+        <foreach collection="ids" item="idValue" index="no" open="(" separator="," close=")">
+            #{idValue}
+        </foreach>
+    </delete>
+
+    <select id="getMenuList" resultType="com.dev.admin.entity.Menu">
+        select * from menu where 1=1
+        order by sequence
+    </select>
+
+    <select id="getMenuListAll" resultType="com.dev.admin.entity.Menu">
+        select * from menu order by sequence
+    </select>
+
+</mapper>

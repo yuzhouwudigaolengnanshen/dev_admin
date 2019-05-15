@@ -1,0 +1,45 @@
+<div class="layui-content">
+    <table id="taskUserTable" lay-filter="roleTable"></table>
+    <!--<button id="userAddTask" class="layui-btn layui-btn-danger"><i class="layui-icon">&#xe640;</i>确认</button>-->
+</div>
+
+<script>
+
+    $(function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var table = layui.table;
+
+        //展示已知数据
+        var projectUserTable = table.render({
+            elem: '#taskUserTable'
+            ,url: 'project/getUserByProjectId?projectId=' + $("#formProjectId").val() //数据接口
+            ,cols: [[ //标题栏
+                {type:'checkbox'}
+                ,{field: 'id', title: 'id', width: 150, sort: true}
+                ,{field: 'name', title: '姓名', width: 150}
+            ]]
+            ,response: {
+                //statusName: 'status' //规定数据状态的字段名称，默认：code
+                //,statusCode: 200 //规定成功的状态码，默认：0
+                countName: 'total' //规定数据总数的字段名称，默认：count
+                ,dataName: 'list' //规定数据列表的字段名称，默认：data
+            }
+            ,skin: 'line' //表格风格
+            ,page: true //是否显示分页
+            ,limits: [10, 20, 50]
+            ,limit: 10 //每页默认显示的数量
+            ,done:function(res,curr,count){
+                var list = res.list;
+
+                /*for(var i = 0;i< list.length;i++){
+                    list[i].LAY_CHECKED = true;
+                }
+
+                table.render();*/
+            }
+        });
+    });
+
+
+</script>

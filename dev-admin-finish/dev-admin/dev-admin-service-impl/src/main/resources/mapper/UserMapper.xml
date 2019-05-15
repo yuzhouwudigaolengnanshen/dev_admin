@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.dev.admin.mapper.UserMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into user (`name`,login_name,password,phone,email,region,create_date,qq,orgId)
+          values
+       (#{name},#{loginName},#{password},#{phone},#{email},#{region},#{createDate},#{qq},#{orgId})
+    </insert>
+
+    <insert id="insertUserRole" useGeneratedKeys="true" keyProperty="id">
+        insert into user_role (user_id,role_id)
+        values
+        (#{userId},#{roleId})
+    </insert>
+
+    <update id="update" useGeneratedKeys="true" keyProperty="id">
+        update user
+          set name = #{name},
+              login_name = #{loginName},
+              <if test="password !=null and password != ''">
+                password = #{password},
+              </if>
+              phone = #{phone},
+              email = #{email},
+              region = #{region},
+              qq = #{qq},
+              orgId = #{orgId}
+        where id = #{id}
+    </update>
+
+    <update id="updatePass" useGeneratedKeys="true" keyProperty="id">
+        update user
+        set password = #{password}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from user where id = #{id}
+    </delete>
+
+    <delete id="deleteUserRoleByUserId">
+        delete from user_role where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from user where id in
+        <foreach collection="ids" item="idValue" index="no" open="(" separator="," close=")">
+            #{idValue}
+        </foreach>
+
+    </delete>
+
+    <select id="getRoleByUserId" resultType="com.dev.admin.entity.UserRole">
+        select * from user_role where user_id = #{userId}
+    </select>
+
+    <select id="getUserByLoginName" resultType="com.dev.admin.entity.User">
+        select * from user where login_name = #{loginName}
+    </select>
+
+    <select id="getUserById" resultType="com.dev.admin.entity.User">
+        select * from user where id = #{id}
+    </select>
+
+
+    <select id="getUserList" resultType="com.dev.admin.entity.User">
+        select * from user where 1=1
+        <if test="name !=null and name != ''">
+            and name like #{name}
+        </if>
+        <if test="email !=null and email != ''">
+            and email like #{email}
+        </if>
+        <if test="qq != null and qq != ''">
+            and qq like #{qq}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            and orgId like #{orgId}
+        </if>
+    </select>
+
+    <select id="getUserMenus" resultType="com.dev.admin.entity.Menu">
+        select distinct m.* from `user` u, role r, user_role ur, menu m, role_menu rm
+        where u.id = ur.user_id
+        and r.id = ur.role_id
+        and m.id = rm.menu_id
+        and r.id = rm.role_id
+        and u.id = #{userId}
+        order by m.sequence
+    </select>
+
+</mapper>

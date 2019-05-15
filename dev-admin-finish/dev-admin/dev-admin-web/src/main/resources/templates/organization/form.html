@@ -1,0 +1,87 @@
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">机构信息</div>
+            <form class="layui-form layui-card-body" action="" lay-filter="org-form" >
+
+                <input type="hidden" id="layerIndex" value="-1">
+                <input type="hidden" name="id" value="0">
+                <input type="hidden" id="parentId" name="parentId" value="0">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">上级机构</label>
+                    <div class="layui-input-block">
+                        <span id="parentOrgName" style="line-height: 40px;">无</span>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">机构名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">机构编码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="code" required lay-verify="required" placeholder="机构编码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">序号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sequence" lay-verify="number" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-blue" lay-submit lay-filter="user-form-submit">提交</button>
+                        <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        /*var form = layui.form;
+        var layer = layui.layer;
+
+        form.render();
+
+
+        var pId = $("#pId").val();
+        var pName = $("#pName").val();
+        if(pId){
+            $("#parentId").val(pId);
+            $("#parentOrgName").html(pName);
+        }
+
+        //监听提交
+        form.on('submit(user-form-submit)', function(data){
+            $.post('org/addOrUpdateOrg',data.field,function (data) {
+                layer.msg('保存成功');
+                var layerIndex = $("#layerIndex").val();
+                if(layerIndex > 0){
+                    layer.close(layerIndex);
+                }else{
+                    layui.element.tabDelete("tabs", "organization/form.html");
+                }
+
+                layui.table.reload('orgTable',{
+                    page:1
+                }); //表格重载
+            },'json');
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });*/
+
+    });
+
+</script>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.dev.admin.mapper.RoleMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into role (`name`,code,create_date)
+          values
+       (#{name},#{code},#{createDate})
+    </insert>
+
+    <insert id="insertRoleMenu" useGeneratedKeys="true" keyProperty="id">
+        insert into role_menu (role_id,menu_id)
+        values
+        (#{roleId},#{menuId})
+    </insert>
+
+    <update id="update" useGeneratedKeys="true" keyProperty="id">
+        update role
+          set name = #{name},
+              code = #{code}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from role where id = #{id}
+    </delete>
+
+    <delete id="deleteRoleMenuByRoleId">
+        delete from role_menu where role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from role where id in
+        <foreach collection="ids" item="idValue" index="no" open="(" separator="," close=")">
+            #{idValue}
+        </foreach>
+    </delete>
+
+    <select id="getRoleList" resultType="com.dev.admin.entity.Role">
+        select * from role where 1=1
+        <if test="name !=null and name != ''">
+            and name like #{name}
+        </if>
+        <if test="code !=null and code != ''">
+            and code like #{code}
+        </if>
+    </select>
+
+    <select id="getMenuByRoleId" resultType="com.dev.admin.entity.RoleMenu">
+        select rm.* from role_menu rm, menu m
+        where rm.menu_id = m.id and role_id = #{roleId}
+        and (select count(0) from menu where parent_id = m.id)= 0
+    </select>
+
+</mapper>

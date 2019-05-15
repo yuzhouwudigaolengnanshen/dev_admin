@@ -1,0 +1,55 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="D:\WEBAPP\西开项目2\dev-admin\dev-admin\dev-admin-web\src\main\resources\public\js\jquery.min.js"></script>
+</head>
+<body>
+<div>
+    username:<input type="text" style="width: 100px;" id="username" class="user">
+    <button id="button1" >set</button>
+    <br>
+    age:<input id="age" class="user" style="width: 100px;">
+    <button id="button2">set</button>
+    <br>
+    tall:<input id="tall" class="user" style="width: 100px;">
+    <button id="button3" >set</button>
+</div>
+
+<div id="div1" style="border: 1px">
+    <input  type="text" id="kuang" class="user" style="width: 300px;height: 300px;color: greenyellow;border: 1px" value="helloworld">
+    <!--<span>hello world</span>-->
+    <button id="button4">hide</button>
+    <button id="button5">show</button>
+</div>
+
+
+    <script>
+        $(function (){
+            $("#button1").click(function () {
+                $("#username").val("张鹏展");
+            });
+            $("#button2").click(function () {
+                $("#age").val("man");
+            });
+            $("[id='button3']").click(function () {
+                $("#tall").val(180);
+            });
+            // $("#kuang").val("hello world");
+            $("#button4").click(function () {
+                $("#kuang").hide();
+            });
+            $("#button5").click(function () {
+                $("#kuang").show();
+            });
+
+
+        });
+
+
+    </script>
+</body>
+</html>

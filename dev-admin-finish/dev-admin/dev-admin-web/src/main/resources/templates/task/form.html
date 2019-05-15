@@ -1,0 +1,69 @@
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">任务信息</div>
+            <form class="layui-form layui-card-body" action="" lay-filter="task-form" >
+                <input type="hidden" id="layerIndex" value="-1">
+                <input type="hidden" name="projectId" id="taskProjectId">
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务描述</label>
+                    <div class="layui-input-block">
+                        <textarea id="demo" name="content" style="display: none;"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">处理人</label>
+                    <div class="layui-input-block" >
+                        <select id="userList" lay-verify="" name="devUserId">
+                            <!--<option value="010" name="">张三</option>-->
+                            <!--<option value="021">李四</option>-->
+                            <!--<option value="0571">王五</option>-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="display: none;">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-blue" lay-submit lay-filter="task-form-submit">提交</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        var projectId = $("#projectId").val();
+        $("#taskProjectId").val(projectId);
+
+        $.get('task/getUserByProjectId',{projectId:projectId},function (data) {
+                // <option value="010">张三</option>
+                // <option value="021">李四</option>
+                // <option value="0571">王五</option>
+            var list = data;
+            var html = '';
+            for (var i = 0; i < list.length ;i++){
+                html += '<option value="'+list[i].id+'">'+list[i].name+'</option>';
+            }
+            $("#userList").html(html);
+            //alert(html);
+            layui.form.render('select');
+        });
+    })
+
+</script>
+

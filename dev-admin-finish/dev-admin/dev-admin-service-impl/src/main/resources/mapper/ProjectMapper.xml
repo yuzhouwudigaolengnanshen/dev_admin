@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dev.admin.mapper.ProjectMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+          insert into project (name,create_user_id,create_date,bg_url) values (#{name},#{createUserId},#{createDate},#{bgUrl})
+    </insert>
+
+
+    <select id="getProjectList" resultMap="project">
+        select * from project where create_user_id = #{createUserId}
+    </select>
+
+    <update id="update" useGeneratedKeys="true" keyProperty="id">
+        update project
+        set name = #{name},
+        create_user_id = #{createUserId},
+        create_date  = #{createDate},
+        bg_url = #{bgUrl}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        delete from project where id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectJoin" parameterType="int">
+        delete from project_join where project_id = #{projectId}
+    </delete>
+
+    <insert id="addUserTask" useGeneratedKeys="true" keyProperty="id">
+        insert into project_join (project_id,user_id)
+        values
+        (#{projectId},#{userId})
+    </insert>
+
+    <select id="getOwnProjectList" resultMap="project">
+        select p.id,p.name,p.create_user_id,p.create_date,p.bg_url from project p
+        join project_join j on p.id = j.project_id
+        where j.user_id = #{userId};
+    </select>
+
+    <select id="getUserByProjectId" resultType="com.dev.admin.vo.UserVo">
+        SELECT
+            u.*,
+            j.project_id
+        FROM
+            `user` u
+         left JOIN project_join j ON u.id = j.user_id
+         and j.project_id = #{projectId}
+
+    </select>
+
+    <select id="getCreateUserByProjectId" parameterType="int" resultType="int">
+        select create_user_id createUserId from project where id = #{projectId}
+    </select>
+
+    <select id="getProjectByProjectId" parameterType="int" resultType="com.dev.admin.entity.Project">
+        select * from project where id = #{projectId};
+    </select>
+
+    <resultMap id="project" type="com.dev.admin.entity.Project">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_date" property="createDate"/>
+        <result column="bg_url" property="bgUrl"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,149 @@
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-warm layui-btn-sm" lay-event="createTask" id="createTask">创建任务</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <div class="layui-input-block" style="float: right;letter-spacing:5px;">
+            <input type="radio" name="sex" value="0" title="新建"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>男</div></div>
+            <input type="radio" name="sex" value="1" title="已完成" checked=""><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon"></i><div>女</div></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="finish">完成</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script type="text/html" id="taskTitleTpl">
+    <span class="layui-table-link" lay-event="showDetail">{{ d.username }}</span>
+</script>
+
+<script>
+    $(function(){
+        var table = layui.table;
+
+        var projectId = $("#projectId").val();
+        //alert(projectId);
+        table.render({
+            elem: '#test'
+            ,url:'task/getTaskByProjectId?projectId='+ projectId
+            ,toolbar: '#toolbarDemo'
+            ,title: '任务数据表'
+            ,cols: [[
+                //{type: 'checkbox', fixed: 'left'}
+                //  {field:'projectName', title:'项目名称', width:120, templet: '#taskTitleTpl'}
+                 {field:'projectName', title:'项目名称', width:170}
+                ,{field:'title', title:'任务主题', width:150 }
+                ,{field:'content', title:'任务核心', width:200, edit: 'text', sort: true}
+                ,{field:'createDatetime', title:'创建时间', width:150}
+                ,{field:'createUserName', title:'创建人员',width :100}
+                ,{field:'taskUserName', title:'处理人员', width:80, sort: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:200}
+            ]]
+            ,page: true
+            ,response: {
+                //statusName: 'status' //规定数据状态的字段名称，默认：code
+                //,statusCode: 200 //规定成功的状态码，默认：0
+                countName: 'total' //规定数据总数的字段名称，默认：count
+                ,dataName: 'list' //规定数据列表的字段名称，默认：data
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'createTask':
+                    $.get('task/form.html',function(html){
+                        var index = layer.open({
+                            type: 1
+                            ,title: '任务信息'
+                            ,area: ['800px', '530px']
+                            ,shade: 0
+                            ,maxmin: true
+                            ,content: html
+                            ,btn: ['保存', '取消']
+                            ,yes: function(){
+                                $("[lay-filter=\"task-form-submit\"]").click();
+                            }
+                            ,btn2: function(){
+                                layer.close(index);
+                            }
+                        });
+
+                        var layedit = layui.layedit;
+                        var editIndex = layedit.build('demo'); //建立编辑器
+                        layui.form.render('select');
+
+                        layui.form.on('submit(task-form-submit)', function(data) {
+                            data.field["content"] = layedit.getContent(editIndex);
+                            $.post('task/insertTask', data.field, function (data) {
+                                layer.msg('保存成功');
+                                layui.form.render('test');
+                                layer.close(index);
+                            }, 'json');
+
+                            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                        });
+                    });
+
+                    break;
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'showDetail'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }else if (obj.event === 'finish'){
+                var id = data.id;
+                $.post('task/finishTask',{taskId:id},function (data) {
+                    layer.msg('成功');
+                    layer.close(index);
+                })
+            }
+        });
+    });
+</script>
